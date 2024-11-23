@@ -5,6 +5,7 @@ import com.vistulaforum.topic.model.create.TopicHandleBodyDto;
 import com.vistulaforum.topic.model.create.TopicHandleResult;
 import com.vistulaforum.topic.model.create.TopicCreateState;
 import com.vistulaforum.topic.model.dto.TopicDto;
+import com.vistulaforum.topic.model.dto.TopicPreviewDto;
 import com.vistulaforum.topic.service.TopicDaoService;
 import com.vistulaforum.user.model.dao.UserDao;
 import com.vistulaforum.user.service.UserDaoService;
@@ -15,9 +16,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
+@RequestMapping(path = "/topics")
 public class TopicController {
 
     @Autowired
@@ -26,7 +30,7 @@ public class TopicController {
     @Autowired
     private UserDaoService userDaoService;
 
-    @PostMapping(path = "/topic/create")
+    @PostMapping(path = "/create")
     public ResponseEntity<TopicHandleResult> createTopic(@AuthenticationPrincipal UserDetails userDetails,
                                                          @RequestBody TopicHandleBodyDto topicHandleBody) {
         Optional<UserDao> userDaoOptional = userDaoService.getUserDaoByLogin(userDetails.getUsername());
@@ -38,7 +42,7 @@ public class TopicController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResult().getCode()));
     }
 
-    @PutMapping(path = "/topic/edit")
+    @PutMapping(path = "/edit")
     public ResponseEntity<TopicHandleResult> editTopic(@AuthenticationPrincipal UserDetails userDetails,
                                                        @RequestBody TopicHandleBodyDto topicHandleBody,
                                                        @RequestParam(name = "topic_id") BigInteger topicId) {
@@ -51,7 +55,7 @@ public class TopicController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResult().getCode()));
     }
 
-    @DeleteMapping(path = "/topic/delete")
+    @DeleteMapping(path = "/delete")
     public ResponseEntity<String> deleteTopic(@AuthenticationPrincipal UserDetails userDetails,
                                               @RequestParam(name = "topic_id") BigInteger topicId) {
         Optional<UserDao> userDaoOptional = userDaoService.getUserDaoByLogin(userDetails.getUsername());
@@ -64,6 +68,24 @@ public class TopicController {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/preview")
+    public ResponseEntity<List<TopicPreviewDto>> getTopicsPreview() {
+        List<TopicPreviewDto> response = topicDaoService.getTopicsPreview();
+        if (response.isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<TopicDto> getTopicById(@PathVariable(name = "id") BigInteger topicId) {
+        TopicDto response = topicDaoService.getTopicDtoById(topicId);
+        if (Objects.equals(response, null)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

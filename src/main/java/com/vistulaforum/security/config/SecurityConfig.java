@@ -61,7 +61,7 @@ public class SecurityConfig {
         CorsConfigurationSource source = corsConfigurationSource();
         CorsFilter corsFilter = new CorsFilter(source);
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(corsFilter);
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE); // Ensure CORS filter runs early
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }
 
@@ -77,10 +77,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/topics/preview").permitAll()
+                        .requestMatchers("/topics/{id}").permitAll()
 
                         .requestMatchers("/me/**").authenticated()
-                        .requestMatchers("/topic/create").authenticated()
-                        .requestMatchers("/topic/delete").authenticated()
+                        .requestMatchers("/topics/create").authenticated()
+                        .requestMatchers("/topics/delete").authenticated()
+                        .requestMatchers("/topics/edit").authenticated()
+
+                        .requestMatchers("/posts/create").authenticated()
+                        .requestMatchers("/posts/delete").authenticated()
+                        .requestMatchers("/posts/delete").authenticated()
 
                         .anyRequest().permitAll())
                 .httpBasic(withDefaults())
