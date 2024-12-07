@@ -39,6 +39,7 @@ public class PostDaoService implements IPostDaoService {
     @Override
     @Transactional
     public PostHandleResult createPost(UserDao userDao, PostHandleBodyDto postHandleBody) {
+        System.out.println(postHandleBody.toString());
         Optional<TopicDao> topicDaoOptional = topicDaoService.getTopicDaoById(postHandleBody.getTopicId());
         if (topicDaoOptional.isEmpty()) {
             return new PostHandleResult(new Result(PostCreateState.POST_NOT_FOUND), null);
@@ -68,7 +69,7 @@ public class PostDaoService implements IPostDaoService {
             return new PostHandleResult(new Result(PostCreateState.POST_NOT_FOUND), null);
         }
         PostDao postDao = postDaoOptional.get();
-        if (this.isUserAnAuthorOfPost(postDao, userDao)) {
+        if (!this.isUserAnAuthorOfPost(postDao, userDao)) {
             return new PostHandleResult(new Result(PostCreateState.USER_IS_NOT_AN_AUTHOR), null);
         }
 

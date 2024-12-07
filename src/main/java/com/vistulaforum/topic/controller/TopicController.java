@@ -33,6 +33,9 @@ public class TopicController {
     @PostMapping(path = "/create")
     public ResponseEntity<TopicHandleResult> createTopic(@AuthenticationPrincipal UserDetails userDetails,
                                                          @RequestBody TopicHandleBodyDto topicHandleBody) {
+        if (userDetails == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
         Optional<UserDao> userDaoOptional = userDaoService.getUserDaoByLogin(userDetails.getUsername());
         if (userDaoOptional.isEmpty()) {
             return new ResponseEntity<>(new TopicHandleResult(new Result(TopicCreateState.USER_NOT_FOUND), null), HttpStatus.UNAUTHORIZED);
@@ -46,6 +49,10 @@ public class TopicController {
     public ResponseEntity<TopicHandleResult> editTopic(@AuthenticationPrincipal UserDetails userDetails,
                                                        @RequestBody TopicHandleBodyDto topicHandleBody,
                                                        @RequestParam(name = "topic_id") BigInteger topicId) {
+        if (userDetails == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
         Optional<UserDao> userDaoOptional = userDaoService.getUserDaoByLogin(userDetails.getUsername());
         if (userDaoOptional.isEmpty()) {
             return new ResponseEntity<>(new TopicHandleResult(new Result(TopicCreateState.USER_NOT_FOUND), null), HttpStatus.UNAUTHORIZED);
@@ -58,6 +65,10 @@ public class TopicController {
     @DeleteMapping(path = "/delete")
     public ResponseEntity<String> deleteTopic(@AuthenticationPrincipal UserDetails userDetails,
                                               @RequestParam(name = "topic_id") BigInteger topicId) {
+        if (userDetails == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
         Optional<UserDao> userDaoOptional = userDaoService.getUserDaoByLogin(userDetails.getUsername());
         if (userDaoOptional.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
